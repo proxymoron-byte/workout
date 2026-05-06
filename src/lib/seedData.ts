@@ -1,4 +1,13 @@
-import type { Exercise, Routine } from './types';
+import type { Checkup, Exercise, Routine } from './types';
+
+export const SEED_CHECKUPS: Checkup[] = [
+  { id: 'seed-checkup-bloodwork', name: 'Annual bloodwork', intervalMonths: 12 },
+  { id: 'seed-checkup-dental', name: 'Dental cleaning', intervalMonths: 6 },
+  { id: 'seed-checkup-eye', name: 'Eye exam', intervalMonths: 24 },
+  { id: 'seed-checkup-skin', name: 'Skin / dermatology check', intervalMonths: 12 },
+  { id: 'seed-checkup-cervical', name: 'Cervical screening', intervalMonths: 36 },
+  { id: 'seed-checkup-gp', name: 'General GP checkup', intervalMonths: 12 },
+];
 
 export const SEED_EXERCISES: Exercise[] = [
   { id: 'seed-banded-squat', name: 'Banded squat', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
