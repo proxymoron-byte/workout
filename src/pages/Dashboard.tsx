@@ -7,6 +7,7 @@ import { addDaysCET, startOfWeekCET, todayCET, weekdayKeyCET, type WeekdayKey } 
 import { sortViews, viewFor } from '../lib/checkups';
 import { getInProgressSession, startSession } from '../lib/session';
 import type { Routine, ScheduleSlot } from '../lib/types';
+import { DriftBar } from '../components/DriftBar';
 
 export function Dashboard() {
   const [settings] = useSettings();
@@ -345,6 +346,5 @@ function statusLabel(s: ReturnType<typeof viewFor>['status']): string {
 }
 
 function DriftBarSlot() {
-  // Drift rules engine ships in step 8. The bar will render here when an active rule fires.
-  return null;
+  return <DriftBar />;
 }
