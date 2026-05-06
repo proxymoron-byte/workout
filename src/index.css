@@ -354,6 +354,26 @@ h4 {
   color: var(--color-text);
 }
 
+.pill.checkup-overdue {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.pill.checkup-due-soon {
+  background: var(--color-warn-soft);
+  color: var(--color-warn);
+}
+
+.pill.checkup-up-to-date {
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+}
+
+.pill.checkup-schedule {
+  background: var(--color-info-soft);
+  color: var(--color-info);
+}
+
 .btn-sm {
   padding: var(--space-1) var(--space-2);
   font-size: 0.85rem;

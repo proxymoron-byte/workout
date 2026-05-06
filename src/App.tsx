@@ -1,8 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
-import { Body, Checkups } from './pages/Placeholders';
+import { Body } from './pages/Placeholders';
 import { Nutrition } from './pages/Nutrition';
+import { Checkups } from './pages/Checkups';
+import { Steps } from './pages/Steps';
 import { Settings } from './pages/Settings';
 import { Workouts } from './pages/workouts/Workouts';
 import { Routines } from './pages/workouts/Routines';
@@ -28,6 +30,7 @@ export default function App() {
           <Route path="session/:id" element={<SessionPlayer />} />
           <Route path="nutrition" element={<Nutrition />} />
           <Route path="body" element={<Body />} />
+          <Route path="steps" element={<Steps />} />
           <Route path="checkups" element={<Checkups />} />
           <Route path="settings" element={<Settings />} />
         </Route>
