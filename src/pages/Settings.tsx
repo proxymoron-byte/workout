@@ -3,8 +3,18 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useSettings } from '../lib/settings';
 import { clearAll, downloadExport, importBundle, type ImportMode } from '../lib/exportImport';
 import { db } from '../lib/db';
-import type { ScheduleSlot } from '../lib/types';
+import type { DriftRuleId, ScheduleSlot } from '../lib/types';
 import type { WeekdayKey } from '../lib/date';
+
+const DRIFT_RULE_LABELS: { id: DriftRuleId; label: string; description: string }[] = [
+  { id: 'overdueCheckup', label: 'Overdue checkup', description: 'When any checkup is overdue by 30+ days.' },
+  { id: 'missedWorkouts', label: 'Missed workouts', description: 'When fewer than 2 sessions in the last 7 days (and weekly goal is ≥3).' },
+  { id: 'proteinLow', label: 'Protein trending low', description: '7-day average protein under 85% of your goal.' },
+  { id: 'kcalHigh', label: 'Calories trending high', description: '7-day average calories over 115% of your goal.' },
+  { id: 'weightTrend', label: 'Weight trend', description: '14-day rolling average has shifted opposite to your goal direction by ≥1.5%.' },
+  { id: 'longGap', label: 'Long gap', description: 'No logging activity in 3+ days.' },
+  { id: 'exportReminder', label: '30-day export reminder', description: "Reminds you to export your data when it's been a month since your last export." },
+];
 
 const WEEKDAYS: { key: WeekdayKey; label: string }[] = [
   { key: 'mon', label: 'Mon' },
@@ -42,6 +52,10 @@ export function Settings() {
 
   const setSlot = (day: WeekdayKey, slot: ScheduleSlot) => {
     setSettings({ ...settings, weeklySchedule: { ...settings.weeklySchedule, [day]: slot } });
+  };
+
+  const setDriftRule = (id: DriftRuleId, enabled: boolean) => {
+    setSettings({ ...settings, driftRules: { ...settings.driftRules, [id]: enabled } });
   };
 
   const onPickFile = async (file: File) => {
@@ -174,6 +188,29 @@ export function Settings() {
                 ))}
               </select>
             </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card section">
+        <h2>Notifications</h2>
+        <p className="muted" style={{ marginTop: 0 }}>
+          The dashboard surfaces one drift signal at a time. Each is dismissible for 24 hours.
+        </p>
+        <div className="stack" style={{ gap: 'var(--space-3)' }}>
+          {DRIFT_RULE_LABELS.map((r) => (
+            <label key={r.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+              <input
+                type="checkbox"
+                checked={settings.driftRules[r.id]}
+                onChange={(e) => setDriftRule(r.id, e.target.checked)}
+                style={{ marginTop: 4 }}
+              />
+              <span>
+                <span style={{ fontWeight: 500 }}>{r.label}</span>
+                <span className="muted" style={{ display: 'block', fontSize: '0.85rem' }}>{r.description}</span>
+              </span>
+            </label>
           ))}
         </div>
       </div>
