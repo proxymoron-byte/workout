@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 export function Workouts() {
   const { pathname } = useLocation();
-  const hideTabs = /\/workouts\/(routines|history)\/[^/]+/.test(pathname);
+  const hideTabs = /\/workouts\/(routines|history)\/[^/]+|\/workouts\/generate$/.test(pathname);
 
   return (
     <div className="page">
