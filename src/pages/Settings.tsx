@@ -1,6 +1,32 @@
 import { useRef, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useSettings } from '../lib/settings';
 import { clearAll, downloadExport, importBundle, type ImportMode } from '../lib/exportImport';
+import { db } from '../lib/db';
+import type { ScheduleSlot } from '../lib/types';
+import type { WeekdayKey } from '../lib/date';
+
+const WEEKDAYS: { key: WeekdayKey; label: string }[] = [
+  { key: 'mon', label: 'Mon' },
+  { key: 'tue', label: 'Tue' },
+  { key: 'wed', label: 'Wed' },
+  { key: 'thu', label: 'Thu' },
+  { key: 'fri', label: 'Fri' },
+  { key: 'sat', label: 'Sat' },
+  { key: 'sun', label: 'Sun' },
+];
+
+function slotToValue(slot: ScheduleSlot): string {
+  if (slot.kind === 'rest') return '__rest';
+  if (slot.kind === 'active-recovery') return '__active';
+  return slot.routineId;
+}
+
+function valueToSlot(value: string): ScheduleSlot {
+  if (value === '__rest') return { kind: 'rest' };
+  if (value === '__active') return { kind: 'active-recovery' };
+  return { kind: 'routine', routineId: value };
+}
 
 export function Settings() {
   const [settings, setSettings] = useSettings();
@@ -8,8 +34,14 @@ export function Settings() {
   const [importMode, setImportMode] = useState<ImportMode>('replace');
   const [status, setStatus] = useState<string | null>(null);
 
+  const routines = useLiveQuery(() => db.routines.orderBy('name').toArray(), []);
+
   const updateGoal = <K extends keyof typeof settings.goals>(key: K, value: typeof settings.goals[K]) => {
     setSettings({ ...settings, goals: { ...settings.goals, [key]: value } });
+  };
+
+  const setSlot = (day: WeekdayKey, slot: ScheduleSlot) => {
+    setSettings({ ...settings, weeklySchedule: { ...settings.weeklySchedule, [day]: slot } });
   };
 
   const onPickFile = async (file: File) => {
@@ -119,6 +151,30 @@ export function Settings() {
               onChange={(e) => updateGoal('weighInsPerWeek', Number(e.target.value))}
             />
           </div>
+        </div>
+      </div>
+
+      <div className="card section">
+        <h2>Weekly schedule</h2>
+        <p className="muted">Sets the dashboard's default routine for each day. Mondays start the week.</p>
+        <div className="stack" style={{ gap: 'var(--space-2)' }}>
+          {WEEKDAYS.map((d) => (
+            <div key={d.key} className="row" style={{ alignItems: 'center' }}>
+              <strong style={{ flex: '0 0 60px' }}>{d.label}</strong>
+              <select
+                value={slotToValue(settings.weeklySchedule[d.key])}
+                onChange={(e) => setSlot(d.key, valueToSlot(e.target.value))}
+              >
+                <option value="__rest">Rest</option>
+                <option value="__active">Active recovery</option>
+                {routines?.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
         </div>
       </div>
 

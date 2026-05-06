@@ -9,10 +9,6 @@ function Placeholder({ title, step }: { title: string; step: string }) {
   );
 }
 
-export function Workouts() {
-  return <Placeholder title="Workouts" step="Routine library + session player land in steps 2 and 3." />;
-}
-
 export function Nutrition() {
   return <Placeholder title="Nutrition" step="Nutrition logging lands in step 4." />;
 }

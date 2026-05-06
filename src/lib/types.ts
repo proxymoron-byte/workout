@@ -24,6 +24,14 @@ export interface RoutineExercise {
   restSec: number;
 }
 
+export interface RowingBlock {
+  warmupMin: number;
+  intervals: number;
+  hardMin: number;
+  easyMin: number;
+  cooldownMin: number;
+}
+
 export interface Routine {
   id: ID;
   name: string;
@@ -32,6 +40,8 @@ export interface Routine {
   defaultRestSec: number;
   estimatedMinutes: number;
   notes?: string;
+  rowingBlock?: RowingBlock;
+  defaultActivity?: string;
 }
 
 export interface SessionSetResult {
