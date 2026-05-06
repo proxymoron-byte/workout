@@ -7,6 +7,9 @@ import { Workouts } from './pages/workouts/Workouts';
 import { Routines } from './pages/workouts/Routines';
 import { Exercises } from './pages/workouts/Exercises';
 import { RoutineDetail } from './pages/workouts/RoutineDetail';
+import { History } from './pages/workouts/History';
+import { SessionDetail } from './pages/workouts/SessionDetail';
+import { SessionPlayer } from './pages/session/SessionPlayer';
 
 export default function App() {
   return (
@@ -18,7 +21,10 @@ export default function App() {
             <Route index element={<Routines />} />
             <Route path="exercises" element={<Exercises />} />
             <Route path="routines/:id" element={<RoutineDetail />} />
+            <Route path="history" element={<History />} />
+            <Route path="history/:id" element={<SessionDetail />} />
           </Route>
+          <Route path="session/:id" element={<SessionPlayer />} />
           <Route path="nutrition" element={<Nutrition />} />
           <Route path="body" element={<Body />} />
           <Route path="checkups" element={<Checkups />} />

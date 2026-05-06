@@ -45,12 +45,15 @@ export interface Routine {
 }
 
 export interface SessionSetResult {
-  setIndex: number;
   completed: boolean;
 }
 
 export interface SessionExerciseResult {
   exerciseId: ID;
+  exerciseNameSnapshot: string;
+  plannedSets: number;
+  plannedReps: string;
+  restSec: number;
   sets: SessionSetResult[];
   notes?: string;
 }
@@ -59,11 +62,14 @@ export interface WorkoutSession {
   id: ID;
   routineId: ID;
   routineNameSnapshot: string;
+  routineKindSnapshot: RoutineKind;
   startedAt: string;
   completedAt?: string;
   durationSec?: number;
   exercises: SessionExerciseResult[];
   activityLabel?: string;
+  rowingBlockSnapshot?: RowingBlock;
+  rowingComplete?: boolean;
 }
 
 export type MealTag = 'breakfast' | 'lunch' | 'dinner' | 'snack';

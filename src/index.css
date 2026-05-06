@@ -380,3 +380,167 @@ h4 {
   flex-direction: column;
   gap: var(--space-3);
 }
+
+.session-page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-5);
+  gap: var(--space-3);
+}
+
+.progress-bar {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-5);
+}
+
+.progress-seg {
+  flex: 1;
+  height: 6px;
+  background: var(--color-surface-2);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.progress-seg.partial {
+  background: var(--color-warn-soft);
+}
+
+.progress-seg.full {
+  background: var(--color-accent);
+}
+
+.progress-seg.current {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.set-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.set-row:hover {
+  background: var(--color-surface-2);
+}
+
+.set-row.done {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+
+.set-row input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.set-label {
+  font-weight: 500;
+}
+
+.set-target {
+  font-size: 0.9rem;
+}
+
+.rest-timer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-info-soft);
+  border-radius: var(--radius-md);
+}
+
+.rest-time {
+  font-size: 2rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.up-next {
+  background: var(--color-surface-2);
+}
+
+.big-time {
+  font-size: 3rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.phase-pill {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.phase-warmup {
+  background: var(--color-info-soft);
+  color: var(--color-info);
+}
+
+.phase-hard {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.phase-easy {
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+}
+
+.phase-cooldown {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.rowing-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--color-surface-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rowing-bar-fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.25s linear;
+}
+
+.set-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+}
+
+.set-dot.done {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}

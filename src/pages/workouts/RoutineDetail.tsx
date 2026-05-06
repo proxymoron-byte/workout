@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../lib/db';
 import type { Exercise, Routine, RoutineExercise, RoutineKind } from '../../lib/types';
 import { Modal } from '../../components/Modal';
+import { getInProgressSession, startSession } from '../../lib/session';
 
 export function RoutineDetail() {
   const { id } = useParams<{ id: string }>();
@@ -262,8 +263,24 @@ export function RoutineDetail() {
         <button className="btn btn-primary" disabled={!dirty} onClick={onSave}>
           {dirty ? 'Save changes' : 'Saved'}
         </button>
-        <button className="btn" disabled>
-          Start session (step 3)
+        <button
+          className="btn"
+          onClick={async () => {
+            if (dirty) {
+              if (!confirm('Save unsaved changes before starting?')) return;
+              await onSave();
+            }
+            const inProgress = await getInProgressSession();
+            if (inProgress) {
+              if (!confirm('A session is already in progress. Resume it?')) return;
+              navigate(`/session/${inProgress.id}`);
+              return;
+            }
+            const s = await startSession(draft);
+            navigate(`/session/${s.id}`);
+          }}
+        >
+          Start session
         </button>
         <button className="btn btn-danger" onClick={onDelete} style={{ marginLeft: 'auto' }}>
           Delete routine
