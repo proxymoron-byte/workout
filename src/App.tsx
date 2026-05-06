@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
-import { Body, Checkups, Nutrition } from './pages/Placeholders';
+import { Body, Checkups } from './pages/Placeholders';
+import { Nutrition } from './pages/Nutrition';
 import { Settings } from './pages/Settings';
 import { Workouts } from './pages/workouts/Workouts';
 import { Routines } from './pages/workouts/Routines';

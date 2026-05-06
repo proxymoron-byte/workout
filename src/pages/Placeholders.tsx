@@ -9,10 +9,6 @@ function Placeholder({ title, step }: { title: string; step: string }) {
   );
 }
 
-export function Nutrition() {
-  return <Placeholder title="Nutrition" step="Nutrition logging lands in step 4." />;
-}
-
 export function Body() {
   return <Placeholder title="Body" step="Weight + cycle tabs land in step 5." />;
 }
