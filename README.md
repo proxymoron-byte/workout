@@ -227,13 +227,13 @@ Critical because everything is local.
 
 Auth, multi-user, online DB / sync, Health Connect / Apple Health / Google Fit / Clue API, native mobile (PWA only), AI-generated workouts, photos, sleep, mood, supplements/meds, lab-value detail, social, push reminders.
 
-## Open questions to resolve before implementation
+## Resolved decisions
 
-1. **Time zone handling.** All dates = local-device date. Travelers' "today" follows device clock. OK for v1?
-2. **Units.** Metric throughout (kg, g, kcal). Confirm.
-3. **First day of week.** Monday. Confirm.
-4. **Visual identity.** Calm, multi-color palette inspired by Intelly reference. Concrete palette/typography to be agreed before UI work.
-5. **Browser support.** Latest Chrome/Safari/Firefox only.
+1. **Time zone.** CET. "Today" rolls over at CET midnight regardless of device location, so a user travelling outside CET still sees a stable day boundary. All date math uses a CET helper, not the device's local time.
+2. **Units.** Metric only (kg, g, kcal). No imperial toggle.
+3. **First day of week.** Monday. Affects the weekly schedule, the "this week" rollups, and any week-strip UI.
+4. **Visual identity.** Deferred to a Claude Design pass. Implementation uses a neutral, low-commitment baseline (system font stack, restrained palette) until design lands. Build with theming hooks (CSS variables for colors and spacing) so the design swap is mechanical.
+5. **Browser support.** Latest Chrome only. Safari/Firefox are not v1 targets — feel free to use Chrome-only APIs where they meaningfully help.
 
 ## Implementation order (proposed)
 
