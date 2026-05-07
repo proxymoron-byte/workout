@@ -5,10 +5,14 @@ export function Workouts() {
   const hideTabs = /\/workouts\/(routines|history)\/[^/]+/.test(pathname);
 
   return (
-    <main className="page">
-      <div className="section">
-        <h1>Workouts</h1>
-      </div>
+    <div className="page">
+      <section className="head-row">
+        <div>
+          <span className="page-eyebrow eyebrow-kcal">Workouts</span>
+          <h1 className="page-title">Routines & sessions</h1>
+          <p className="page-sub">Pick today's routine, dig into past sessions, or generate a new one.</p>
+        </div>
+      </section>
       {!hideTabs && (
         <div className="tabs">
           <NavLink to="/workouts" end className={({ isActive }) => `tab${isActive ? ' active' : ''}`}>
@@ -22,7 +26,9 @@ export function Workouts() {
           </NavLink>
         </div>
       )}
-      <Outlet />
-    </main>
+      <div style={{ margin: '0 32px' }}>
+        <Outlet />
+      </div>
+    </div>
   );
 }
