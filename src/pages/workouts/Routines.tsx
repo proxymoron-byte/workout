@@ -52,7 +52,10 @@ export function Routines() {
     <>
       <div className="between" style={{ marginBottom: 'var(--space-4)' }}>
         <p className="muted" style={{ margin: 0 }}>{routines?.length ?? 0} routines.</p>
-        <button className="btn btn-primary" onClick={onNew}>+ New routine</button>
+        <div className="actions">
+          <button className="btn" onClick={() => navigate('/workouts/generate')}>Generate</button>
+          <button className="btn btn-primary" onClick={onNew}>+ New routine</button>
+        </div>
       </div>
       {!routines && <div className="empty">Loading…</div>}
       {routines && routines.length === 0 && <div className="card empty">No routines yet.</div>}

@@ -12,6 +12,7 @@ import { Exercises } from './pages/workouts/Exercises';
 import { RoutineDetail } from './pages/workouts/RoutineDetail';
 import { History } from './pages/workouts/History';
 import { SessionDetail } from './pages/workouts/SessionDetail';
+import { Generate } from './pages/workouts/Generate';
 import { SessionPlayer } from './pages/session/SessionPlayer';
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
             <Route index element={<Routines />} />
             <Route path="exercises" element={<Exercises />} />
             <Route path="routines/:id" element={<RoutineDetail />} />
+            <Route path="generate" element={<Generate />} />
             <Route path="history" element={<History />} />
             <Route path="history/:id" element={<SessionDetail />} />
           </Route>
