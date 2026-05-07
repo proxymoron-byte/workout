@@ -55,11 +55,20 @@ export function Steps() {
   const pct = goal > 0 && todayCount !== null ? Math.round((todayCount / goal) * 100) : null;
 
   return (
-    <main className="page">
-      <div className="section">
-        <Link to="/" className="muted" style={{ textDecoration: 'none' }}>← Dashboard</Link>
-        <h1 style={{ marginTop: 'var(--space-2)' }}>Steps</h1>
-      </div>
+    <div className="page">
+      <section className="head-row">
+        <div>
+          <span className="page-eyebrow eyebrow-steps">Steps</span>
+          <h1 className="page-title">{todayCount === null ? '—' : todayCount.toLocaleString()}</h1>
+          <p className="page-sub">
+            {goal > 0 && todayCount !== null ? `${pct}% of ${goal.toLocaleString()} step goal · 30-day avg ${avg30.toLocaleString()}` : 'Log your steps at the end of the day.'}
+          </p>
+        </div>
+        <div className="head-actions">
+          <Link to="/" className="ghost-btn">← Dashboard</Link>
+          <button className="cta-btn" onClick={onLogToday}>{todayEntry ? 'Edit today' : 'Log steps'}</button>
+        </div>
+      </section>
 
       <div className="card section">
         <div className="between" style={{ marginBottom: 'var(--space-3)' }}>
@@ -107,7 +116,7 @@ export function Steps() {
       </div>
 
       {editing && <StepsModal entry={editing} onSave={onSave} onClose={() => setEditing(null)} />}
-    </main>
+    </div>
   );
 }
 

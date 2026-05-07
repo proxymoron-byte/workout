@@ -8,6 +8,8 @@ import { sortViews, viewFor } from '../lib/checkups';
 import { getInProgressSession, startSession } from '../lib/session';
 import type { Routine, ScheduleSlot } from '../lib/types';
 import { DriftBar } from '../components/DriftBar';
+import { ArtBand, ArtDrop, ArtFlame, ArtFootprint, ArtMoon } from '../components/Illustrations';
+import { IconChevronRight, IconClock, IconExternal, IconPlay, IconStethoscope } from '../components/Icons';
 
 export function Dashboard() {
   const [settings] = useSettings();
@@ -19,6 +21,8 @@ export function Dashboard() {
   const sessionsAll = useLiveQuery(() => db.sessions.toArray(), []);
   const checkups = useLiveQuery(() => db.checkups.toArray(), []);
   const routines = useLiveQuery(() => db.routines.toArray(), []);
+  const exercises = useLiveQuery(() => db.exercises.toArray(), []);
+  const exMap = useMemo(() => new Map((exercises ?? []).map((e) => [e.id, e.name])), [exercises]);
 
   const todayKcal = useMemo(
     () => (nutrition ?? []).filter((e) => e.date === today).reduce((s, e) => s + e.kcal, 0),
@@ -67,130 +71,165 @@ export function Dashboard() {
     return (routines ?? []).find((r) => r.id === todaysSlot.routineId) ?? null;
   }, [todaysSlot, routines]);
 
-  const hasAnyData = (nutrition?.length ?? 0) > 0 || (stepsAll?.length ?? 0) > 0 || completedSessionsThisWeek.length > 0;
+  const greeting = (() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  })();
+  const name = settings.displayName || 'there';
 
-  const greeting = settings.displayName ? `Hello, ${settings.displayName}.` : 'Hello.';
   const todayPretty = new Date(`${today}T12:00:00`).toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
   });
 
+  const kcalGoal = settings.goals.kcalDaily;
+  const proteinGoal = settings.goals.proteinDaily;
+  const stepsGoal = settings.goals.stepsDaily;
+  const kcalPct = kcalGoal > 0 ? Math.round((todayKcal / kcalGoal) * 100) : null;
+  const proteinPct = proteinGoal > 0 ? Math.round((todayProtein / proteinGoal) * 100) : null;
+  const stepsPct = stepsGoal > 0 && todaySteps !== null ? Math.round((todaySteps / stepsGoal) * 100) : null;
+
   return (
-    <main className="page">
-      <header className="section">
-        <h1>{greeting}</h1>
-        <p className="muted">
-          {todayPretty} · {completedSessionsThisWeek.length} workout{completedSessionsThisWeek.length === 1 ? '' : 's'} this week
-        </p>
-      </header>
-
-      {!hasAnyData && (
-        <div className="card section" style={{ background: 'var(--color-info-soft)', borderColor: 'var(--color-info)' }}>
-          <h2 style={{ marginBottom: 'var(--space-3)' }}>Get started</h2>
-          <ol style={{ margin: 0, paddingLeft: '1.2em' }}>
-            <li>
-              <Link to="/settings">Set your daily goals</Link> (calories, protein, steps, weekly workouts).
-            </li>
-            <li>
-              <Link to="/workouts">Browse routines</Link> and assign them to days of the week in settings.
-            </li>
-            <li>
-              <Link to="/nutrition">Log your first meal</Link> — autocomplete kicks in after a few entries.
-            </li>
-          </ol>
+    <div className="page page-dashboard">
+      <section className="greeting">
+        <div className="greeting-text">
+          <h1 className="greeting-title">
+            <span className="greet-eyebrow">{greeting},</span>
+            <span className="greet-name">{name}</span>
+          </h1>
+          <p className="greeting-sub">
+            {todayPretty} · {' '}
+            <strong>{completedSessionsThisWeek.length}</strong>{' '}
+            workout{completedSessionsThisWeek.length === 1 ? '' : 's'} this week.
+          </p>
         </div>
-      )}
+        <div className="greeting-actions">
+          <Link className="pill-btn" to="/nutrition">Quick log</Link>
+          {todaysRoutine && (
+            <button
+              className="pill-btn pill-btn-dark"
+              onClick={async () => {
+                const inProgress = await getInProgressSession();
+                if (inProgress) {
+                  window.location.assign(`${import.meta.env.BASE_URL}session/${inProgress.id}`);
+                  return;
+                }
+                const s = await startSession(todaysRoutine);
+                window.location.assign(`${import.meta.env.BASE_URL}session/${s.id}`);
+              }}
+            >
+              <IconPlay size={14} stroke={1.8} /> Start workout
+            </button>
+          )}
+        </div>
+      </section>
 
-      <section className="metric-grid section">
+      <section className="metrics">
         <MetricCard
           to="/nutrition"
+          tone="kcal"
           label="Calories"
           value={Math.round(todayKcal).toLocaleString()}
-          unit="kcal"
-          goal={settings.goals.kcalDaily}
-          actual={todayKcal}
+          unit={kcalGoal > 0 ? `/ ${kcalGoal.toLocaleString()} kcal` : 'kcal'}
+          foot={kcalPct !== null
+            ? <><strong>{kcalPct}%</strong> of goal · {Math.max(0, kcalGoal - todayKcal).toLocaleString()} kcal left</>
+            : 'No goal set'}
+          art={<ArtFlame size={120} />}
         />
         <MetricCard
           to="/nutrition"
+          tone="protein"
           label="Protein"
-          value={Math.round(todayProtein).toLocaleString()}
-          unit="g"
-          goal={settings.goals.proteinDaily}
-          actual={todayProtein}
+          value={Math.round(todayProtein).toString()}
+          unit={proteinGoal > 0 ? `/ ${proteinGoal} g` : 'g'}
+          foot={proteinPct !== null
+            ? <><strong>{proteinPct}%</strong> of goal · {Math.max(0, proteinGoal - todayProtein)} g to go</>
+            : 'No goal set'}
+          art={<ArtDrop size={110} />}
         />
         <MetricCard
           to="/steps"
+          tone="steps"
           label="Steps"
           value={todaySteps === null ? '—' : todaySteps.toLocaleString()}
-          unit=""
-          goal={settings.goals.stepsDaily}
-          actual={todaySteps ?? null}
-          subline={todaySteps === null ? 'Tap to log' : undefined}
+          unit={stepsGoal > 0 ? `/ ${stepsGoal.toLocaleString()}` : ''}
+          foot={stepsPct !== null
+            ? <><strong>{stepsPct}%</strong> of goal · log at end of day</>
+            : todaySteps === null ? 'Tap to log' : 'No goal set'}
+          art={<ArtFootprint size={110} />}
+        />
+        <MetricCard
+          to="/body/cycle"
+          tone="cycle"
+          label="Cycle"
+          value="Body"
+          unit="weight + cycle"
+          foot="Open Body section"
+          art={<ArtMoon size={110} />}
         />
       </section>
 
-      <section className="section">
-        <TodaysWorkoutCard
-          slot={todaysSlot}
-          routine={todaysRoutine}
-          lastSessionDate={lastSessionAny?.startedAt.slice(0, 10) ?? null}
-        />
-      </section>
+      <FeaturedWorkoutCard slot={todaysSlot} routine={todaysRoutine} exMap={exMap} lastSessionDate={lastSessionAny?.startedAt.slice(0, 10) ?? null} />
 
-      <section className="bottom-grid section">
-        <WeekTrainingCard sessions={completedSessionsThisWeek} weekDays={weekDays} />
+      <section className="bottom-row">
+        <TrainingCard sessions={completedSessionsThisWeek} weekDays={weekDays} weeklyGoal={settings.goals.weeklyWorkouts} today={today} />
+        <CycleCard />
         <CheckupsCard items={dashboardCheckups} />
       </section>
 
-      <DriftBarSlot />
-    </main>
+      <DriftBar />
+    </div>
   );
 }
 
 function MetricCard({
   to,
+  tone,
   label,
   value,
   unit,
-  goal,
-  actual,
-  subline,
+  foot,
+  art,
 }: {
   to: string;
+  tone: 'kcal' | 'protein' | 'steps' | 'cycle';
   label: string;
   value: string;
   unit: string;
-  goal: number;
-  actual: number | null;
-  subline?: string;
+  foot: React.ReactNode;
+  art: React.ReactNode;
 }) {
-  const pct = goal > 0 && actual !== null ? Math.round((actual / goal) * 100) : null;
-  const computed = subline ?? (pct !== null ? `${pct}% of ${goal.toLocaleString()} ${unit}`.trim() : goal > 0 ? `Goal: ${goal.toLocaleString()} ${unit}`.trim() : 'No goal set');
   return (
-    <Link to={to} className="metric-card">
-      <div className="muted" style={{ fontSize: '0.85rem' }}>{label}</div>
-      <div className="metric-value">
-        {value}
-        {unit && <span className="muted" style={{ fontSize: '1rem', fontWeight: 400 }}> {unit}</span>}
+    <Link to={to} className={`metric metric-${tone}`}>
+      <div className="metric-art" aria-hidden>{art}</div>
+      <div className="metric-head">
+        <span className="metric-label">{label}</span>
+        <span className="metric-arrow"><IconChevronRight size={14} stroke={1.6} /></span>
       </div>
-      <div className="muted" style={{ fontSize: '0.85rem' }}>{computed}</div>
+      <div className="metric-value">
+        <span className="metric-num">{value}</span>
+        {unit && <span className="metric-unit">{unit}</span>}
+      </div>
+      <div className="metric-foot">{foot}</div>
     </Link>
   );
 }
 
-function TodaysWorkoutCard({
+function FeaturedWorkoutCard({
   slot,
   routine,
+  exMap,
   lastSessionDate,
 }: {
   slot: ScheduleSlot;
   routine: Routine | null;
+  exMap: Map<string, string>;
   lastSessionDate: string | null;
 }) {
   const navigate = useNavigate();
-  const exercises = useLiveQuery(() => db.exercises.toArray(), []);
-  const exMap = useMemo(() => new Map((exercises ?? []).map((e) => [e.id, e.name])), [exercises]);
 
   const onStart = async () => {
     if (!routine) return;
@@ -204,109 +243,178 @@ function TodaysWorkoutCard({
   };
 
   if (slot.kind === 'rest') {
-    const lastLabel = lastSessionDate ? new Date(`${lastSessionDate}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long' }) : null;
+    const lastLabel = lastSessionDate
+      ? new Date(`${lastSessionDate}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long' })
+      : null;
     return (
-      <div className="card today-workout-card">
-        <div className="muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Today</div>
-        <h2 style={{ marginTop: 'var(--space-1)' }}>Rest day</h2>
-        <p className="muted" style={{ marginTop: 'var(--space-2)' }}>
-          {lastLabel ? `Last session was ${lastLabel}.` : 'No completed sessions yet.'} Take it easy.
-        </p>
-        <p className="muted" style={{ fontSize: '0.85rem', marginTop: 'var(--space-3)' }}>
-          Change today's plan in <Link to="/settings">Settings → Weekly schedule</Link>.
-        </p>
-      </div>
-    );
-  }
-
-  if (slot.kind === 'active-recovery') {
-    return (
-      <div className="card today-workout-card">
-        <div className="muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Today</div>
-        <h2 style={{ marginTop: 'var(--space-1)' }}>Active recovery</h2>
-        <p className="muted" style={{ marginTop: 'var(--space-2)' }}>Walk, skate, mobility — your call.</p>
-        <p className="muted" style={{ fontSize: '0.85rem', marginTop: 'var(--space-3)' }}>
-          Pick a recovery routine in <Link to="/workouts">Workouts</Link> and start it from there.
-        </p>
-      </div>
-    );
-  }
-
-  if (!routine) {
-    return (
-      <div className="card today-workout-card">
-        <div className="muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Today</div>
-        <h2 style={{ marginTop: 'var(--space-1)' }}>No routine assigned</h2>
-        <p className="muted" style={{ marginTop: 'var(--space-2)' }}>
-          The routine assigned to today no longer exists. Pick a new one in <Link to="/settings">Settings → Weekly schedule</Link>.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="card today-workout-card">
-      <div className="between" style={{ marginBottom: 'var(--space-3)' }}>
-        <div>
-          <div className="muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Today</div>
-          <h2 style={{ marginTop: 'var(--space-1)' }}>{routine.name}</h2>
-          <div className="muted" style={{ fontSize: '0.9rem', marginTop: 'var(--space-1)' }}>
-            ~{routine.estimatedMinutes} min · {routine.exercises.length} exercise{routine.exercises.length === 1 ? '' : 's'}
-            {routine.kind === 'rowing-intervals' && routine.rowingBlock && ` · ${routine.rowingBlock.intervals}× rowing`}
+      <section className="featured">
+        <div className="featured-art" aria-hidden><ArtBand size={300} /></div>
+        <div className="featured-head">
+          <div>
+            <span className="featured-eyebrow">Today · rest day</span>
+            <h2 className="featured-title">Take it easy.</h2>
+            <div className="featured-meta">
+              <span>{lastLabel ? `Last session ${lastLabel}` : 'No completed sessions yet'}</span>
+            </div>
+          </div>
+          <div className="featured-actions">
+            <Link to="/settings" className="ghost-btn">Edit schedule</Link>
           </div>
         </div>
-        <button className="btn btn-primary" onClick={onStart}>Start session</button>
+      </section>
+    );
+  }
+
+  if (slot.kind === 'active-recovery' || !routine) {
+    return (
+      <section className="featured">
+        <div className="featured-art" aria-hidden><ArtBand size={300} /></div>
+        <div className="featured-head">
+          <div>
+            <span className="featured-eyebrow">Today · active recovery</span>
+            <h2 className="featured-title">{slot.kind === 'active-recovery' ? 'Walk, skate, mobility' : 'No routine assigned'}</h2>
+            <div className="featured-meta">
+              <span>Pick something light — your call.</span>
+            </div>
+          </div>
+          <div className="featured-actions">
+            <Link to="/workouts" className="ghost-btn">Choose routine</Link>
+            <Link to="/settings" className="cta-btn">Edit schedule</Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const dayName = new Date().toLocaleDateString(undefined, { weekday: 'long' });
+
+  return (
+    <section className="featured">
+      <div className="featured-art" aria-hidden><ArtBand size={300} /></div>
+      <div className="featured-head">
+        <div>
+          <span className="featured-eyebrow">Today's workout · {dayName}</span>
+          <h2 className="featured-title">{routine.name}</h2>
+          <div className="featured-meta">
+            <span><IconClock size={14} stroke={1.7} /> ~{routine.estimatedMinutes} min</span>
+            <span className="dot">·</span>
+            <span>{routine.exercises.length} exercise{routine.exercises.length === 1 ? '' : 's'}</span>
+            {routine.kind === 'rowing-intervals' && routine.rowingBlock && (
+              <>
+                <span className="dot">·</span>
+                <span>{routine.rowingBlock.intervals}× rowing</span>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="featured-actions">
+          <Link to="/workouts" className="ghost-btn">Swap routine</Link>
+          <button className="cta-btn" onClick={onStart}>
+            <IconPlay size={14} stroke={1.9} /> Start session
+          </button>
+        </div>
       </div>
+
       {routine.exercises.length > 0 && (
-        <ul className="today-exercise-list">
-          {routine.exercises.map((re, i) => (
-            <li key={`${re.exerciseId}-${i}`}>
-              <span>{exMap.get(re.exerciseId) ?? '(deleted)'}</span>
-              <span className="muted" style={{ fontSize: '0.85rem' }}>{re.sets} × {re.reps}</span>
-            </li>
-          ))}
-        </ul>
+        <ol className="exercise-list">
+          {routine.exercises.map((re, i) => {
+            const name = exMap.get(re.exerciseId) ?? '(deleted)';
+            return (
+              <li key={`${re.exerciseId}-${i}`} className="exercise-row">
+                <span className="ex-num">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <div className="ex-name">{name}</div>
+                </div>
+                <span className="muscle-chip">workout</span>
+                <a className="form-link" href="#" onClick={(e) => e.preventDefault()} aria-disabled>
+                  <IconExternal size={12} stroke={1.7} /> form
+                </a>
+                <span className="ex-sets">
+                  <strong>{re.sets}</strong>×<span className="ex-reps">{re.reps}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
       )}
-    </div>
+    </section>
   );
 }
 
-function WeekTrainingCard({
+function TrainingCard({
   sessions,
   weekDays,
+  weeklyGoal,
+  today,
 }: {
   sessions: { startedAt: string; durationSec?: number }[];
   weekDays: { date: string; key: WeekdayKey }[];
+  weeklyGoal: number;
+  today: string;
 }) {
   const perDay = weekDays.map((d) => {
     const minutes = sessions
       .filter((s) => s.startedAt.slice(0, 10) === d.date)
       .reduce((sum, s) => sum + Math.round((s.durationSec ?? 0) / 60), 0);
-    return { ...d, minutes };
+    const isToday = d.date === today;
+    const isFuture = d.date > today;
+    let kind: 'workout' | 'rest' | 'today' | 'future' = 'workout';
+    if (isFuture) kind = 'future';
+    else if (isToday && minutes === 0) kind = 'today';
+    else if (minutes === 0) kind = 'rest';
+    return { ...d, minutes, kind };
   });
   const max = Math.max(60, ...perDay.map((d) => d.minutes));
   const totalMin = perDay.reduce((s, d) => s + d.minutes, 0);
   const avgMin = sessions.length > 0 ? Math.round(totalMin / sessions.length) : 0;
 
   return (
-    <Link to="/workouts/history" className="card metric-card-secondary">
-      <div className="muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>This week</div>
-      <div className="metric-value" style={{ fontSize: '1.6rem' }}>
-        {sessions.length} session{sessions.length === 1 ? '' : 's'}
+    <Link to="/workouts/history" className="card-link-wrap">
+      <div className="card-head">
+        <div>
+          <span className="card-eyebrow">This week</span>
+          <h3 className="card-title">Training</h3>
+        </div>
+        <span className="big-num">{sessions.length}<span className="big-num-of">/{weeklyGoal}</span></span>
       </div>
-      <div className="muted" style={{ fontSize: '0.85rem', marginBottom: 'var(--space-3)' }}>
-        Avg {avgMin} min · {totalMin} min total
-      </div>
-      <div className="strip" style={{ height: 60 }}>
+      <div className="train-bars">
         {perDay.map((d) => {
-          const h = max > 0 ? (d.minutes / max) * 100 : 0;
+          const h = (d.minutes / max) * 100;
+          const dayLabel = d.key.charAt(0).toUpperCase();
           return (
-            <div key={d.date} className="strip-bar-wrap">
-              <div className="strip-bar" style={{ height: `${h}%`, background: d.minutes > 0 ? 'var(--color-accent)' : undefined }} title={`${d.date}: ${d.minutes} min`} />
-              <div className="strip-day-label muted">{d.key.slice(0, 1).toUpperCase()}</div>
+            <div key={d.date} className={`train-bar-col col-${d.kind}`}>
+              <div className="train-bar-track">
+                <div className="train-bar-fill" style={{ height: `${h}%` }} />
+                {d.kind === 'today' && <span className="train-bar-today">today</span>}
+              </div>
+              <span className="train-bar-day">{dayLabel}</span>
             </div>
           );
         })}
+      </div>
+      <div className="card-foot">
+        <span><strong>{totalMin} min</strong> total · avg <strong>{avgMin} min</strong></span>
+        <span className="card-link">View history <IconChevronRight size={12} stroke={1.7} /></span>
+      </div>
+    </Link>
+  );
+}
+
+function CycleCard() {
+  return (
+    <Link to="/body/cycle" className="card-link-wrap">
+      <div className="card-head">
+        <div>
+          <span className="card-eyebrow">Body</span>
+          <h3 className="card-title">Weight & cycle</h3>
+        </div>
+      </div>
+      <p className="muted" style={{ margin: 0, fontSize: 13 }}>
+        Log weight, period starts, and bring data over from Clue.
+      </p>
+      <div className="card-foot">
+        <span>Tap to open</span>
+        <span className="card-link">Open <IconChevronRight size={12} stroke={1.7} /></span>
       </div>
     </Link>
   );
@@ -314,37 +422,38 @@ function WeekTrainingCard({
 
 function CheckupsCard({ items }: { items: ReturnType<typeof viewFor>[] }) {
   return (
-    <Link to="/checkups" className="card metric-card-secondary">
-      <div className="muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Checkups</div>
-      {items.length === 0 ? (
-        <div className="empty" style={{ padding: 'var(--space-4) 0' }}>No checkups configured.</div>
-      ) : (
-        <ul className="checkup-mini-list">
-          {items.map((v) => (
-            <li key={v.checkup.id}>
-              <span>{v.checkup.name}</span>
-              <span className={`pill checkup-${v.status}`}>{statusLabel(v.status)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+    <Link to="/checkups" className="card-link-wrap">
+      <div className="card-head">
+        <div>
+          <span className="card-eyebrow">Checkups</span>
+          <h3 className="card-title">Preventive</h3>
+        </div>
+        <span className="dot-warn"><IconStethoscope size={16} stroke={1.6} /></span>
+      </div>
+      <ul className="checkup-list">
+        {items.length === 0 && (
+          <li style={{ padding: '10px 0', color: 'var(--ink-mute)', fontSize: 13 }}>No checkups configured.</li>
+        )}
+        {items.map((v) => (
+          <li key={v.checkup.id} className="checkup-row">
+            <span className={`status-dot s-${v.status}`} />
+            <span className="checkup-name">{v.checkup.name}</span>
+            <span className="checkup-due">
+              {v.daysToDue === null
+                ? 'never logged'
+                : v.daysToDue < 0
+                ? `${-v.daysToDue}d overdue`
+                : v.daysToDue === 0
+                ? 'due today'
+                : `in ${v.daysToDue}d`}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="card-foot">
+        <span></span>
+        <span className="card-link">All checkups <IconChevronRight size={12} stroke={1.7} /></span>
+      </div>
     </Link>
   );
-}
-
-function statusLabel(s: ReturnType<typeof viewFor>['status']): string {
-  switch (s) {
-    case 'overdue':
-      return 'Overdue';
-    case 'due-soon':
-      return 'Due soon';
-    case 'up-to-date':
-      return 'Up to date';
-    case 'schedule':
-      return 'Schedule';
-  }
-}
-
-function DriftBarSlot() {
-  return <DriftBar />;
 }

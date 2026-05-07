@@ -46,28 +46,32 @@ export function Checkups() {
   const dismissDisclaimer = () => setSettings({ ...settings, checkupsDisclaimerSeen: true });
 
   return (
-    <main className="page">
-      <div className="section">
-        <h1>Checkups</h1>
-      </div>
+    <div className="page">
+      <section className="head-row">
+        <div>
+          <span className="page-eyebrow eyebrow-cycle">Preventive</span>
+          <h1 className="page-title">Checkups</h1>
+          <p className="page-sub">Reference table of preventive screenings. Defaults are starting points — verify with your provider.</p>
+        </div>
+        <div className="head-actions">
+          <button className="cta-btn" onClick={onAdd}>+ Add checkup</button>
+        </div>
+      </section>
 
       {!settings.checkupsDisclaimerSeen && (
-        <div className="card section" style={{ background: 'var(--color-warn-soft)', borderColor: 'var(--color-warn)' }}>
-          <div className="between">
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>
-              Default intervals are starting points only. Verify with your healthcare provider — this dashboard isn't medical advice.
-            </p>
-            <button className="btn btn-sm" onClick={dismissDisclaimer}>Got it</button>
-          </div>
-        </div>
+        <section className="card" style={{ margin: '0 32px 24px', background: 'var(--cycle-soft)', borderColor: 'var(--cycle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--cycle-ink)' }}>
+            Default intervals are starting points only. Verify with your healthcare provider — this dashboard isn't medical advice.
+          </p>
+          <button className="ghost-btn" onClick={dismissDisclaimer}>Got it</button>
+        </section>
       )}
 
-      <div className="between" style={{ marginBottom: 'var(--space-4)' }}>
+      <section style={{ margin: '0 32px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p className="muted" style={{ margin: 0 }}>{views.length} checkups tracked.</p>
-        <button className="btn btn-primary" onClick={onAdd}>+ Add checkup</button>
-      </div>
+      </section>
 
-      <div className="card" style={{ padding: 0 }}>
+      <div className="card" style={{ padding: 0, margin: '0 32px' }}>
         {!all && <div className="empty">Loading…</div>}
         {all && views.length === 0 && <div className="empty">No checkups yet.</div>}
         {views.map((v) => (
@@ -106,7 +110,7 @@ export function Checkups() {
       </div>
 
       {editing && <CheckupModal checkup={editing} onSave={onSave} onClose={() => setEditing(null)} />}
-    </main>
+    </div>
   );
 }
 

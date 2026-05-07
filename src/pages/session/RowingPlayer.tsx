@@ -4,6 +4,7 @@ import { patchSession } from '../../lib/session';
 import { beep, formatDuration, useStopwatch } from '../../lib/timers';
 import { useSettings } from '../../lib/settings';
 import { StandardPlayer } from './StandardPlayer';
+import { IconChevronLeft } from '../../components/Icons';
 
 interface Phase {
   label: string;
@@ -96,43 +97,57 @@ function RowingBlockRunner({ session }: { session: WorkoutSession }) {
   };
 
   return (
-    <main className="page session-page">
+    <main className="page-session" style={{ gridTemplateColumns: '1fr', gridTemplateRows: 'auto auto 1fr' }}>
       <header className="session-header">
-        <div>
-          <strong>{session.routineNameSnapshot}</strong>
-          <div className="muted" style={{ fontSize: '0.85rem' }}>
-            Rowing block · {formatDuration(elapsed)} elapsed
-          </div>
+        <button className="session-back" onClick={onSkipBlock}>
+          <IconChevronLeft size={18} stroke={1.8} /> Skip rowing
+        </button>
+        <div className="session-routine">
+          <span className="session-eyebrow">rowing block · {session.routineNameSnapshot}</span>
         </div>
-        <button className="btn" onClick={onSkipBlock}>Skip rowing →</button>
+        <div className="session-elapsed">
+          <span className="session-elapsed-num">{formatDuration(elapsed)}</span>
+        </div>
       </header>
 
-      <div className="card section" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-        <div className={`phase-pill phase-${cur?.kind ?? 'warmup'}`}>{cur?.label ?? 'Done'}</div>
-        <div className="big-time" style={{ marginTop: 'var(--space-3)' }}>{formatDuration(phaseRemaining)}</div>
-        <div className="muted" style={{ fontSize: '0.85rem', marginTop: 'var(--space-2)' }}>
-          Phase {Math.min(phaseIdx + 1, phases.length)} of {phases.length}
+      <div className="session-main" style={{ gridColumn: '1 / -1' }}>
+        <div className="exercise-hero" style={{ textAlign: 'center', padding: '60px 32px' }}>
+          <span className={`phase-pill phase-${cur?.kind ?? 'warmup'}`} style={{ display: 'inline-block' }}>
+            {cur?.label ?? 'Done'}
+          </span>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 96, fontWeight: 500, letterSpacing: '-0.03em', marginTop: 16, fontVariantNumeric: 'tabular-nums' }}>
+            {formatDuration(phaseRemaining)}
+          </div>
+          <div style={{ color: 'rgba(246,243,236,0.6)', fontSize: 13, marginTop: 8 }}>
+            Phase {Math.min(phaseIdx + 1, phases.length)} of {phases.length}
+          </div>
+
+          <div className="rowing-bar" style={{ marginTop: 24, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
+            <div className="rowing-bar-fill" style={{ width: `${blockProgress}%` }} />
+          </div>
+
+          <div style={{ marginTop: 24, display: 'flex', gap: 12, justifyContent: 'center' }}>
+            {!running ? (
+              <button
+                className="rest-btn rest-btn-primary"
+                onClick={() => {
+                  setPhaseStart(Date.now() - (cur.durationSec - phaseRemaining) * 1000);
+                  setRunning(true);
+                }}
+              >
+                {phaseIdx === 0 && phaseRemaining === phases[0].durationSec ? 'Start rowing' : 'Resume'}
+              </button>
+            ) : (
+              <button className="rest-btn" onClick={() => setRunning(false)}>Pause</button>
+            )}
+            <button className="rest-btn" onClick={onSkipPhase}>Skip phase →</button>
+          </div>
         </div>
 
-        <div className="rowing-bar" style={{ marginTop: 'var(--space-5)' }}>
-          <div className="rowing-bar-fill" style={{ width: `${blockProgress}%` }} />
-        </div>
-
-        <div className="row" style={{ marginTop: 'var(--space-5)', justifyContent: 'center' }}>
-          {!running ? (
-            <button className="btn btn-primary" onClick={() => { setPhaseStart(Date.now() - (cur.durationSec - phaseRemaining) * 1000); setRunning(true); }}>
-              {phaseIdx === 0 && phaseRemaining === phases[0].durationSec ? 'Start rowing' : 'Resume'}
-            </button>
-          ) : (
-            <button className="btn" onClick={() => setRunning(false)}>Pause</button>
-          )}
-          <button className="btn" onClick={onSkipPhase}>Skip phase →</button>
-        </div>
+        <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(246,243,236,0.45)', marginTop: 16 }}>
+          After the rowing block, the rest of the routine continues automatically.
+        </p>
       </div>
-
-      <p className="muted" style={{ textAlign: 'center', fontSize: '0.85rem' }}>
-        After the rowing block, the rest of the routine continues automatically.
-      </p>
     </main>
   );
 }

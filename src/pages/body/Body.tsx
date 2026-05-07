@@ -6,10 +6,14 @@ export function Body() {
   const { pathname } = useLocation();
   const onCycle = pathname.endsWith('/cycle');
   return (
-    <main className="page">
-      <div className="section">
-        <h1>Body</h1>
-      </div>
+    <div className="page">
+      <section className="head-row">
+        <div>
+          <span className="page-eyebrow eyebrow-cycle">Body</span>
+          <h1 className="page-title">{onCycle ? 'Cycle' : 'Weight'}</h1>
+          <p className="page-sub">{onCycle ? 'Phase, average length, predicted next start.' : 'Trend over the last 90 days, with a 3-entry rolling average.'}</p>
+        </div>
+      </section>
       <div className="tabs">
         <NavLink to="/body" end className={({ isActive }) => `tab${isActive ? ' active' : ''}`}>
           Weight
@@ -18,8 +22,10 @@ export function Body() {
           Cycle
         </NavLink>
       </div>
-      {onCycle ? <Cycle /> : <Weight />}
+      <div style={{ margin: '0 32px' }}>
+        {onCycle ? <Cycle /> : <Weight />}
+      </div>
       <Outlet />
-    </main>
+    </div>
   );
 }
