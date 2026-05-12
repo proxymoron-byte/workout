@@ -105,26 +105,3 @@ export const BrandMark = ({ size = 22 }: ArtProps) => (
   </svg>
 );
 
-export const UpNextFigure = () => (
-  <svg
-    viewBox="0 0 160 110"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="up-next-figure"
-  >
-    <circle cx="80" cy="30" r="9" />
-    <path d="M80 39v32" />
-    <path d="M80 50l-22 -8" />
-    <path d="M80 50l22 -8" />
-    <path d="M58 42l-12 4" opacity=".55" />
-    <path d="M102 42l12 4" opacity=".55" />
-    <path d="M80 71l-12 22" />
-    <path d="M80 71l12 22" />
-    <path d="M28 46c8-3 14 3 22 0" opacity=".5" />
-    <path d="M132 46c-8-3-14 3-22 0" opacity=".5" />
-    <path d="M40 100h80" opacity=".25" strokeDasharray="2 4" />
-  </svg>
-);
