@@ -8,6 +8,7 @@ import { sortViews, viewFor } from '../lib/checkups';
 import { getInProgressSession, startSession } from '../lib/session';
 import type { Routine, ScheduleSlot } from '../lib/types';
 import { DriftBar } from '../components/DriftBar';
+import { ActivityCalendar } from '../components/ActivityCalendar';
 import { ArtBand, ArtDrop, ArtFlame, ArtFootprint, ArtMoon } from '../components/Illustrations';
 import { IconChevronRight, IconClock, IconExternal, IconPlay, IconStethoscope } from '../components/Icons';
 
@@ -108,6 +109,7 @@ export function Dashboard() {
         </div>
         <div className="greeting-actions">
           <Link className="pill-btn" to="/nutrition">Quick log</Link>
+          <Link className="pill-btn" to="/workouts/generate">Generate routine</Link>
           {todaysRoutine && (
             <button
               className="pill-btn pill-btn-dark"
@@ -127,6 +129,8 @@ export function Dashboard() {
         </div>
       </section>
 
+      <div className="dash-body">
+        <div className="dash-main">
       <section className="metrics">
         <MetricCard
           to="/nutrition"
@@ -176,9 +180,11 @@ export function Dashboard() {
 
       <section className="bottom-row">
         <TrainingCard sessions={completedSessionsThisWeek} weekDays={weekDays} weeklyGoal={settings.goals.weeklyWorkouts} today={today} />
-        <CycleCard />
         <CheckupsCard items={dashboardCheckups} />
       </section>
+        </div>
+        <ActivityCalendar className="dash-rail" />
+      </div>
 
       <DriftBar />
     </div>
@@ -395,26 +401,6 @@ function TrainingCard({
       <div className="card-foot">
         <span><strong>{totalMin} min</strong> total · avg <strong>{avgMin} min</strong></span>
         <span className="card-link">View history <IconChevronRight size={12} stroke={1.7} /></span>
-      </div>
-    </Link>
-  );
-}
-
-function CycleCard() {
-  return (
-    <Link to="/body/cycle" className="card-link-wrap">
-      <div className="card-head">
-        <div>
-          <span className="card-eyebrow">Body</span>
-          <h3 className="card-title">Weight & cycle</h3>
-        </div>
-      </div>
-      <p className="muted" style={{ margin: 0, fontSize: 13 }}>
-        Log weight, period starts, and bring data over from Clue.
-      </p>
-      <div className="card-foot">
-        <span>Tap to open</span>
-        <span className="card-link">Open <IconChevronRight size={12} stroke={1.7} /></span>
       </div>
     </Link>
   );
