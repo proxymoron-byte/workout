@@ -14,7 +14,6 @@ import {
   IconPause,
   IconPlay,
 } from '../../components/Icons';
-import { ArtBand, UpNextFigure } from '../../components/Illustrations';
 
 export function StandardPlayer({ session }: { session: WorkoutSession }) {
   const navigate = useNavigate();
@@ -130,10 +129,6 @@ export function StandardPlayer({ session }: { session: WorkoutSession }) {
 
       <div className="session-main">
         <div className="exercise-hero">
-          <div className="exercise-hero-art" aria-hidden>
-            <ArtBand size={420} />
-          </div>
-
           <div className="exercise-hero-head">
             <span className="ex-position">Exercise {currentIdx + 1} of {exercises.length}</span>
             <h1 className="ex-hero-name">{current.exerciseNameSnapshot}</h1>
@@ -192,7 +187,7 @@ export function StandardPlayer({ session }: { session: WorkoutSession }) {
                     transform="rotate(-90 50 50)"
                   />
                 </svg>
-                <div className="rest-num">{rest.remaining}<span>s</span></div>
+                <div className="rest-num" style={{ textAlign: 'center' }}>{rest.remaining}<span>s</span></div>
               </div>
               <div className="rest-body">
                 <span className="rest-eyebrow">Resting</span>
@@ -229,26 +224,20 @@ export function StandardPlayer({ session }: { session: WorkoutSession }) {
         <span className="up-next-eyebrow">Up next</span>
         {next && upNextEx ? (
           <div className="up-next-card">
-            <div className="up-next-preview" aria-label="Movement preview">
-              <UpNextFigure />
-              <span className="up-next-preview-tag">preview</span>
-            </div>
             <div className="up-next-num">{String(currentIdx + 2).padStart(2, '0')}</div>
             <div>
               <div className="up-next-name">{next.exerciseNameSnapshot}</div>
               <div className="up-next-meta">{next.plannedSets} sets × {next.plannedReps} · {next.restSec}s rest</div>
             </div>
-            {upNextEx.referenceUrl && (
-              <a
-                href={upNextEx.referenceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="form-link"
-                style={{ margin: '6px 20px 0' }}
-              >
-                <IconExternal size={12} stroke={1.7} /> View form
-              </a>
-            )}
+            <a
+              href={upNextEx.referenceUrl ?? 'https://www.fitbod.me/'}
+              target="_blank"
+              rel="noreferrer"
+              className="form-link"
+              style={{ margin: '6px 20px 0' }}
+            >
+              <IconExternal size={12} stroke={1.7} /> Watch demo on Fitbod
+            </a>
             <button
               className="rest-btn"
               style={{ margin: '8px 20px 0', alignSelf: 'flex-start' }}
