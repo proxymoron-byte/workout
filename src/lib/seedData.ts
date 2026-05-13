@@ -9,22 +9,24 @@ export const SEED_CHECKUPS: Checkup[] = [
   { id: 'seed-checkup-gp', name: 'General GP checkup', intervalMonths: 12 },
 ];
 
+const FITBOD_LOOP_BAND = 'https://fitbod.me/exercises/loop-band';
+
 export const SEED_EXERCISES: Exercise[] = [
-  { id: 'seed-banded-squat', name: 'Banded squat', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-row', name: 'Banded row', muscleGroup: 'back', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-chest-press', name: 'Banded chest press', muscleGroup: 'chest', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-lateral-raise', name: 'Banded lateral raise', muscleGroup: 'shoulders', defaultSets: 3, defaultReps: '15', defaultRestSec: 45 },
-  { id: 'seed-banded-pallof-press', name: 'Banded Pallof press', muscleGroup: 'core', defaultSets: 3, defaultReps: '12 each side', defaultRestSec: 45 },
-  { id: 'seed-banded-good-morning', name: 'Banded good morning', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-deadlift', name: 'Banded deadlift', muscleGroup: 'full body', defaultSets: 3, defaultReps: '10', defaultRestSec: 60 },
-  { id: 'seed-banded-glute-kickback', name: 'Banded glute kickback', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12 each side', defaultRestSec: 45 },
-  { id: 'seed-banded-face-pull', name: 'Banded face pull', muscleGroup: 'shoulders', defaultSets: 3, defaultReps: '15', defaultRestSec: 45 },
-  { id: 'seed-banded-hip-thrust', name: 'Banded hip thrust', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-side-step', name: 'Banded side step', muscleGroup: 'legs', defaultSets: 3, defaultReps: '15 each side', defaultRestSec: 45 },
-  { id: 'seed-banded-pull-apart', name: 'Banded pull-apart', muscleGroup: 'back', defaultSets: 3, defaultReps: '15', defaultRestSec: 30 },
-  { id: 'seed-banded-tricep-extension', name: 'Banded tricep extension', muscleGroup: 'chest', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-bicep-curl', name: 'Banded bicep curl', muscleGroup: 'back', defaultSets: 3, defaultReps: '12', defaultRestSec: 45 },
-  { id: 'seed-banded-glute-bridge', name: 'Banded glute bridge', muscleGroup: 'legs', defaultSets: 3, defaultReps: '15', defaultRestSec: 45 },
+  { id: 'seed-banded-squat', name: 'Banded squat', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-row', name: 'Banded row', muscleGroup: 'back', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-chest-press', name: 'Banded chest press', muscleGroup: 'chest', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-lateral-raise', name: 'Banded lateral raise', muscleGroup: 'shoulders', defaultSets: 3, defaultReps: '15', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-pallof-press', name: 'Banded Pallof press', muscleGroup: 'core', defaultSets: 3, defaultReps: '12 each side', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-good-morning', name: 'Banded good morning', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-deadlift', name: 'Banded deadlift', muscleGroup: 'full body', defaultSets: 3, defaultReps: '10', defaultRestSec: 60, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-glute-kickback', name: 'Banded glute kickback', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12 each side', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-face-pull', name: 'Banded face pull', muscleGroup: 'shoulders', defaultSets: 3, defaultReps: '15', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-hip-thrust', name: 'Banded hip thrust', muscleGroup: 'legs', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-side-step', name: 'Banded side step', muscleGroup: 'legs', defaultSets: 3, defaultReps: '15 each side', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-pull-apart', name: 'Banded pull-apart', muscleGroup: 'back', defaultSets: 3, defaultReps: '15', defaultRestSec: 30, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-tricep-extension', name: 'Banded tricep extension', muscleGroup: 'chest', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-bicep-curl', name: 'Banded bicep curl', muscleGroup: 'back', defaultSets: 3, defaultReps: '12', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
+  { id: 'seed-banded-glute-bridge', name: 'Banded glute bridge', muscleGroup: 'legs', defaultSets: 3, defaultReps: '15', defaultRestSec: 45, referenceUrl: FITBOD_LOOP_BAND },
 ];
 
 const FIVE_CORE: { exerciseId: string; sets: number; reps: string; restSec: number }[] = [
